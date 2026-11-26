@@ -434,14 +434,42 @@ tanto, no existe un umbral que sea el mejor para todos los cálculos
 
 ## 5.2 Comparación entre la estimación y las mediciones
 
-El modelo del punto 4 aproxima el costo a partir del trabajo, la profundidad y los procesadores. Sin embargo, no 
-incorpora todos los costos reales de la JVM, la creación de tareas, las asignaciones de memoria y la combinación de 
-arreglos
+Para comparar la aceleración estimada mediante el modelo del punto 4 con la medida, se analizaron sistemas de 
+1, 2 y 4 millones de partículas, considerando el trabajo, la profundidad y el número de procesadores. 
+La siguiente tabla presenta los resultados para los cinco umbrales evaluados
 
-Por ejemplo, con un millón de partículas y umbral 125.000, el movimiento consiguió una aceleración medida de 2,83  
-frente a una estimada de 4,44. Para cuatro millones con umbral 500.000, se midió una aceleración de 3,06 frente 
-a 4,44 estimados. Por eso, el modelo permite comparar tendencias, pero no debe interpretarse como una predicción exacta 
-del tiempo real  
+| Umbral  | Estimada | Medida: 1 millón | Medida: 2 millones | Medida: 4 millones |
+|---------|----------|------------------|--------------------|--------------------|
+| `n`     | 0,91     | 1,00             | 0,99               | 1,00               |
+| `n/2`   | 1,67     | 1,78             | 1,70               | 1,74               |
+| `n/8`   | 4,44     | 2,83             | 2,79               | 3,06               |
+| `n/64`  | 8,65     | 2,66             | 2,75               | 2,90               |
+| `n/512` | 9,81     | 2,55             | 2,65               | 2,62               |
+
+### Similitudes entre la aceleración estimada y la medida
+
+Ambas muestran que dividir el trabajo mejora el rendimiento. Con `umbral = n`, no existe una ganancia significativa 
+la estimación es 0,91 y la medición aproximadamente 1. Con `n/2`, los resultados son cercanos (1,67 estimado y 
+entre 1,70 y 1,78 medidos). Al reducirlo a `n/8`, ambas muestran una mejora, con aceleraciones medidas de 2,83, 
+2,79 y 3,06 para 1, 2 y 4 millones de partículas  
+
+### Diferencias entre la aceleración estimada y la medida
+
+El modelo predice que la aceleración sigue aumentando con umbrales pequeños 8,65 para `n/64` y 9,81 para `n/512`.  
+Sin embargo, las mediciones alcanzan su máximo con `n/8` y después disminuyen hasta 2,55, 2,65, y 2,62 con `n/512`.
+Además, la estimación es prácticamente igual para los tres tamaños con umbrales proporcionales, mientras que las
+mediciones presentan variaciones.
+
+### Explicación de las diferencias
+
+El modelo considera el trabajo, la profundidad y los procesadores, pero simplifica los costos reales. 
+Los segmentos pequeños generan más tareas, planificación, sincronización y combinaciones. Además, `izq ++ der` crea y
+copia arreglos, aumentando el costo del movimiento. También pueden influir la memoria, la caché, la recolección 
+de basura y la JVM, aunque sus efectos no se midieron individualmente
+
+Por ello, el modelo representa las tendencias iniciales, pero no predice exactamente el rendimiento. 
+Las mediciones muestran que `n/8` ofrece el mejor equilibrio entre paralelismo y costos adicionales para el 
+movimiento de partículas  
 
 En qué se parecen: en las dos, con umbral igual a `n` no hay ganancia (estimada 0,91 y medida 1,00). Al bajar el umbral a `n/2` y a `n/8`, la aceleración sube en ambas (estimada 1,67 y 4,44; medida 1,78 y 2,83).
 
