@@ -229,7 +229,7 @@ de la hoja final) y `tiempoEstimado(n, p, umbral)` suma la profundidad y el trab
 El modelo es:
 
 - El trabajo total es: $W(n) = n$
-- La profundidad del cálculo es: $D(n, u) = \operatorname{profundidad}(n, u)$
+- La profundidad del cálculo es: $D(n, u) = \mathrm{profundidad}(n, u)$
 - El tiempo estimado se calcula así: $T_{\mathrm{estimado}}(n, p, u) = D(n, u) + \frac{W(n)}{p}$
 - La aceleración estimada es: $S_{\mathrm{estimada}} = \frac{W(n)}{T_{\mathrm{estimado}}(n, p, u)}$
 
